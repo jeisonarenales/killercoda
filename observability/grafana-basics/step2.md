@@ -50,7 +50,7 @@ cd ~/grafana-basics
 Podemos comprobar que los archivos están disponibles:
 
 ```bash
-ls -la
+ls -la && \
 ls -la prometheus
 ```{{exec}}
 

@@ -136,6 +136,73 @@ Grafana → http://prometheus:9090 → Prometheus
 ```
 
 Ahora Grafana está preparado para consultar las métricas recopiladas por Prometheus.
+### 5.1. Consultar una métrica desde Grafana Explore
+
+Ahora que hemos configurado Prometheus como data source, podemos comprobar que Grafana es capaz de consultar las métricas almacenadas en Prometheus.
+
+Para ello utilizaremos **Explore**, una herramienta de Grafana que permite consultar y analizar datos directamente desde un data source.
+
+Desde el menú lateral de Grafana, selecciona:
+
+**Explore**
+
+En la parte superior de la pantalla, selecciona el data source:
+
+**Prometheus**
+
+A continuación, introduce la siguiente métrica en el editor de consultas:
+
+```text
+prometheus_ready
+```{{copy}}
+
+Esta métrica nos permite comprobar que Prometheus está listo para procesar consultas.
+
+Ejecuta la consulta haciendo clic en Run query.
+
+Deberías obtener un resultado con un valor de:
+
+```text
+1
+```
+
+Esto indica que Prometheus está listo y que Grafana puede consultar correctamente sus métricas.
+
+### 5.2 (Opcional) Configurar el refresco automático
+
+También podemos configurar Grafana para que vuelva a ejecutar la consulta automáticamente.
+
+En la opción **Refresh query**, selecciona:
+
+```text
+30s
+```
+
+De esta manera, Grafana ejecutará nuevamente la consulta cada 30 segundos y actualizará el resultado.
+
+La configuración debería quedar similar a:
+
+```text
+Data source:   Prometheus
+Query:         prometheus_ready
+Refresh query: 30s
+```
+
+Si la consulta devuelve 1, habremos comprobado que la comunicación entre Grafana y Prometheus funciona correctamente:
+
+```text
+Grafana Explore
+      │
+      │ query: prometheus_ready
+      ▼
+  Prometheus
+      │
+      │ result: 1
+      ▼
+    Grafana
+```
+
+> **Nota:** Esta comprobación es diferente a utilizar Save & test en la configuración del data source. Save & test comprueba que Grafana puede comunicarse con Prometheus, mientras que esta consulta nos permite verificar que Grafana puede consultar datos desde Prometheus.
 
 ## Resumen
 
