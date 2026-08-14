@@ -50,8 +50,7 @@ cd ~/grafana-basics
 Podemos comprobar que los archivos están disponibles:
 
 ```bash
-ls -la && \
-ls -la prometheus
+tree
 ```{{exec}}
 
 Deberías encontrar:
@@ -63,7 +62,7 @@ docker-compose.yml
 y:
 
 ```text
-prometheus.yml
+prometheus/prometheus.yml
 ```
 
 ### Revisar la configuración de Prometheus

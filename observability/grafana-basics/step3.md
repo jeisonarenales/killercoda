@@ -37,6 +37,8 @@ Para iniciar Grafana, ejecutaremos:
 docker-compose up -d grafana
 ```{{exec}}
 
+> **Nota:** Grafana puede tardar unos momentos en iniciar completamente después de ejecutar el comando anterior. **Espera un par de minutos antes de acceder a la interfaz web.** Si intentas acceder inmediatamente, es posible que inicialmente aparezca un error mientras el servidor termina de iniciar.
+
 Podemos comprobar que el contenedor está ejecutándose:
 
 ```bash
@@ -95,9 +97,13 @@ Haz clic en:
 
 **Add new data source**
 
+![Grafana Datasource 1](./assets/img/grafana-datasource-1.png)
+
 Selecciona:
 
 **Prometheus**
+
+![Grafana Datasource 2](./assets/img/grafana-datasource-2.png)
 
 Ahora debemos indicar a Grafana dónde puede encontrar nuestro servidor Prometheus.
 
@@ -115,6 +121,8 @@ La configuración debería quedar similar a:
 Prometheus server URL: http://prometheus:9090
 ```
 
+![Grafana Datasource 3](./assets/img/grafana-datasource-3.png)
+
 > **Importante:** Aquí no utilizamos `localhost:9090`. Desde el contenedor de Grafana, `localhost` hace referencia al propio contenedor de Grafana. Utilizamos `prometheus` porque corresponde al nombre del servicio definido en Docker Compose y Docker permite que los servicios se comuniquen utilizando sus nombres.
 
 No es necesario modificar las demás opciones para este escenario.
@@ -122,6 +130,7 @@ No es necesario modificar las demás opciones para este escenario.
 Haz clic en:
 
 **Save & test**
+![Grafana Datasource 4](./assets/img/grafana-datasource-4.png)
 
 ## 5. Verificar la conexión
 
