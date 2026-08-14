@@ -36,7 +36,8 @@ A continuación, extraeremos el archivo descargado y copiaremos el binario de No
 ```bash
 tar -xvf node_exporter-1.12.1.linux-amd64.tar.gz && \
 cd node_exporter-1.12.1.linux-amd64 && \
-sudo cp node_exporter /usr/local/bin/
+sudo cp node_exporter /usr/local/bin/ && \
+cd ~
 ```{{exec}}
 
 Podemos comprobar que el binario se encuentra disponible ejecutando:

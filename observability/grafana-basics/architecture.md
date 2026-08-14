@@ -4,7 +4,7 @@ En este escenario construiremos una solución básica de monitorización utiliza
 
 A alto nivel, la arquitectura estará compuesta por los siguientes componentes:
 
-![Arquitectura de Grafana y Prometheus](./assets/architecture.png)
+![Arquitectura de Grafana y Prometheus](./assets/img/architecture.png)
 
 * **Ubuntu Linux:** servidor donde se ejecutará nuestro entorno de monitorización.
 * **Docker:** utilizado para ejecutar Grafana y Prometheus.

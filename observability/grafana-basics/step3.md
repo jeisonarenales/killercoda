@@ -37,8 +37,6 @@ Para iniciar Grafana, ejecutaremos:
 docker-compose up -d grafana
 ```{{exec}}
 
-> **Nota:** En este escenario utilizaremos `docker-compose` para administrar los contenedores.
-
 Podemos comprobar que el contenedor está ejecutándose:
 
 ```bash
@@ -167,16 +165,18 @@ Deberías obtener un resultado con un valor de:
 ```
 
 Esto indica que Prometheus está listo y que Grafana puede consultar correctamente sus métricas.
+![Grafana Explore 1](./assets/img/grafana-explore-1.png)
 
 ### 5.2 (Opcional) Configurar el refresco automático
 
 También podemos configurar Grafana para que vuelva a ejecutar la consulta automáticamente.
 
-En la opción **Refresh query**, selecciona:
+En la opción **Auto refresh**, selecciona:
 
 ```text
 30s
 ```
+![Grafana Explore 2](./assets/img/grafana-explore-2.png)
 
 De esta manera, Grafana ejecutará nuevamente la consulta cada 30 segundos y actualizará el resultado.
 
@@ -188,7 +188,7 @@ Query:         prometheus_ready
 Refresh query: 30s
 ```
 
-Si la consulta devuelve 1, habremos comprobado que la comunicación entre Grafana y Prometheus funciona correctamente:
+Si la consulta devuelve `1`, habremos comprobado que la comunicación entre Grafana y Prometheus funciona correctamente:
 
 ```text
 Grafana Explore
@@ -202,7 +202,7 @@ Grafana Explore
     Grafana
 ```
 
-> **Nota:** Esta comprobación es diferente a utilizar Save & test en la configuración del data source. Save & test comprueba que Grafana puede comunicarse con Prometheus, mientras que esta consulta nos permite verificar que Grafana puede consultar datos desde Prometheus.
+> **Nota:** Esta comprobación es diferente a utilizar **Save & test** en la configuración del data source. `Save & test` comprueba que Grafana puede comunicarse con Prometheus, mientras que esta consulta nos permite verificar que Grafana puede consultar datos desde Prometheus.
 
 ## Resumen
 

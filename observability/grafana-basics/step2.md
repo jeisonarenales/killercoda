@@ -237,7 +237,7 @@ node_cpu_seconds_total
 y ejecuta la consulta.
 
 Si todo está funcionando correctamente, Prometheus devolverá las series temporales recopiladas desde Node Exporter.
-![Consulta Prometheus](./assets/prometheus-query.png)
+![Consulta Prometheus](./assets/img/prometheus-query.png)
 
 También puedes probar otras métricas, como:
 
