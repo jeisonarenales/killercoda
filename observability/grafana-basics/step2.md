@@ -157,7 +157,7 @@ Node Exporter
 Ahora que hemos revisado la configuración, podemos iniciar Prometheus utilizando Docker Compose:
 
 ```bash
-docker compose up -d
+docker-compose up -d prometheus
 ```{{exec}}
 
 La opción `-d` ejecuta el contenedor en segundo plano.
@@ -165,7 +165,7 @@ La opción `-d` ejecuta el contenedor en segundo plano.
 Podemos comprobar que el contenedor está ejecutándose:
 
 ```bash
-docker compose ps
+docker-compose ps
 ```{{exec}}
 
 Deberías ver el contenedor `prometheus` con un estado similar a:
@@ -178,7 +178,7 @@ prometheus   Up
 También podemos consultar los logs del contenedor:
 
 ```bash
-docker compose logs prometheus
+docker-compose logs prometheus
 ```{{exec}}
 
 Si Prometheus se ha iniciado correctamente, no deberíamos encontrar errores relacionados con el archivo de configuración.
