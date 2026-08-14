@@ -8,6 +8,9 @@
     "steps": [
       {
         "text": "architecture.md"
+      },
+      {
+        "text": "step1.md"
       }
     ],
     "finish": {
