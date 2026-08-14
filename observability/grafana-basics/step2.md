@@ -228,27 +228,28 @@ Busca en la respuesta el target correspondiente a `node_exporter`.
 
 Finalmente, comprobaremos que Prometheus está recopilando las métricas de Node Exporter.
 
-Desde la interfaz web de Prometheus, busca la siguiente métrica:
+Desde la [interfaz web]({{TRAFFIC_HOST1_9090}}) de Prometheus, busca la siguiente métrica:
 
 ```text
 node_cpu_seconds_total
-```
+```{{copy}}
 
 y ejecuta la consulta.
 
 Si todo está funcionando correctamente, Prometheus devolverá las series temporales recopiladas desde Node Exporter.
+![Consulta Prometheus](./assets/prometheus-query.png)
 
 También puedes probar otras métricas, como:
 
 ```text
 node_memory_MemAvailable_bytes
-```
+```{{copy}}
 
 o:
 
 ```text
 node_filesystem_avail_bytes
-```
+```{{copy}}
 
 Estas métricas serán utilizadas posteriormente para crear visualizaciones en Grafana.
 
