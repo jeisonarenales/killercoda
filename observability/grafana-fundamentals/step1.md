@@ -45,6 +45,12 @@ Podemos comprobar que el binario se encuentra disponible ejecutando:
 node_exporter --version
 ```{{exec}}
 
+Deberías obtener una salida similar a:
+
+```text
+node_exporter, version 1.12.1
+```
+
 ## 3. Crear un servicio de systemd
 
 Para administrar Node Exporter como un servicio del sistema, crearemos un usuario dedicado y un servicio de `systemd`.
@@ -77,37 +83,64 @@ EOF
 Recargaremos la configuración de `systemd` y habilitaremos e iniciaremos el servicio:
 
 ```bash
-sudo systemctl daemon-reload
+sudo systemctl daemon-reload && \
 sudo systemctl enable --now node_exporter
 ```{{exec}}
 
+El comando anterior realiza dos acciones:
+
+- `enable`: configura el servicio para que se inicie automáticamente durante el arranque del sistema.
+- `--now`: inicia el servicio inmediatamente, sin necesidad de reiniciar el servidor.
+
 ## 4. Verificar el servicio
 
-Podemos comprobar que Node Exporter se está ejecutando correctamente con:
+Comprobaremos que Node Exporter se está ejecutando correctamente:
 
 ```bash
 sudo systemctl status node_exporter --no-pager
 ```{{exec}}
 
-Deberías ver el servicio en estado `active (running)`.
+Deberías ver el servicio en estado:
 
-También podemos comprobar que Node Exporter está escuchando en el puerto `9100`:
+```text
+Active: active (running)
+```
+
+También podemos verificar que Node Exporter está escuchando en el puerto `9100`:
 
 ```bash
 sudo ss -lntp | grep 9100
 ```{{exec}}
 
+Deberías obtener una salida indicando que existe un proceso escuchando en el puerto `9100`.
+
 ## 5. Consultar las métricas
 
-Finalmente, podemos comprobar las métricas directamente desde el endpoint HTTP de Node Exporter.
+Finalmente, podemos consultar directamente el endpoint de métricas de Node Exporter:
 
-Abre el siguiente enlace en tu navegador:
+```bash
+curl -s http://localhost:9100/metrics | head
+```{{exec}}
 
-[http://localhost:9100]({{TRAFFIC_HOST1_9100}})
+Si todo está funcionando correctamente, veremos algunas de las métricas expuestas por Node Exporter.
 
-Si Node Exporter está funcionando correctamente, encontrarás una página con una gran cantidad de métricas del servidor.
+Node Exporter también proporciona una interfaz web en el puerto `9100`. Puedes acceder a ella desde el siguiente enlace:
 
-Estas métricas todavía **no están siendo recopiladas por Prometheus**. En este punto, Node Exporter simplemente las está exponiendo para que un sistema de monitorización como Prometheus pueda consultarlas.
+[http://localhost:9100/metrics]({{TRAFFIC_HOST1_9100}}/metrics)
 
-En el siguiente paso configuraremos **Prometheus** para que realice un *scrape* de este endpoint y comience a recopilar las métricas.
-````
+Si ves la página de Node Exporter y una lista de métricas, la instalación se ha completado correctamente.
+
+> **Importante:** En este punto, Node Exporter únicamente está **exponiendo** las métricas del servidor. Todavía no tenemos ningún componente recopilándolas. En el siguiente paso configuraremos **Prometheus** para que realice un *scrape* de este endpoint y almacene las métricas.
+
+## Resumen
+
+En este paso hemos:
+
+- Instalado el binario de **Node Exporter**.
+- Creado un usuario dedicado para ejecutar el servicio.
+- Configurado Node Exporter como un servicio de `systemd`.
+- Habilitado el servicio para que se inicie automáticamente.
+- Verificado que Node Exporter está ejecutándose y escuchando en el puerto `9100`.
+- Consultado las métricas expuestas por Node Exporter.
+
+En el siguiente paso configuraremos **Prometheus** y agregaremos Node Exporter como un **target** para comenzar a recopilar estas métricas.
