@@ -13,23 +13,23 @@
                 "text": "step1.md"
             }
         ],
+        "assets": {
+            "host01": [
+                {
+                    "file": "docker-compose.yml",
+                    "target": "~/grafana-basics"
+                },
+                {
+                    "file": "prometheus/prometheus.yml",
+                    "target": "~/grafana-basics/prometheus"
+                }
+            ]
+        },
         "finish": {
             "text": "finish.md"
         }
     },
-    "assets": {
-        "host01": [
-            {
-                "file": "docker-compose.yml",
-                "target": "~/grafana-basics"
-            },
-            {
-                "file": "prometheus/prometheus.yml",
-                "target": "~/grafana-basics/prometheus"
-            }
-        ]
-    },
-  "backend": {
+    "backend": {
         "imageid": "ubuntu"
     }
 }
