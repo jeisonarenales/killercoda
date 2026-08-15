@@ -1,0 +1,42 @@
+{
+    "title": "Fundamentos de Grafana",
+    "description": "Aprende a configurar Grafana y Prometheus con Docker para monitorizar un servidor Linux utilizando Node Exporter y visualizar sus métricas en dashboards de Grafana.",
+    "details": {
+        "intro": {
+            "text": "intro.md",
+            "background": "background.sh"
+        },
+        "steps": [
+            {
+                "text": "architecture.md"
+            },
+            {
+                "text": "step1.md"
+            },
+            {
+                "text": "step2.md"
+            },
+            {
+                "text": "step3.md"
+            }
+        ],
+        "assets": {
+            "host01": [
+                {
+                    "file": "docker-compose.yml",
+                    "target": "~/grafana-basics"
+                },
+                {
+                    "file": "prometheus/prometheus.yml",
+                    "target": "~/grafana-basics/prometheus"
+                }
+            ]
+        },
+        "finish": {
+            "text": "finish.md"
+        }
+    },
+    "backend": {
+        "imageid": "ubuntu"
+    }
+}
