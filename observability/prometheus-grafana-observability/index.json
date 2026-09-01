@@ -1,5 +1,5 @@
 {
-  "title": "Fundamentos de Grafana",
+  "title": "Construye tu primer sistema de Observabilidad con Prometheus y Grafana",
   "description": "Aprende a configurar Grafana y Prometheus con Docker para monitorizar un servidor Linux utilizando Node Exporter y visualizar sus métricas en dashboards de Grafana.",
   "details": {
     "intro": {
