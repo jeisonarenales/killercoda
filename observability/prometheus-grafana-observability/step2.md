@@ -31,7 +31,7 @@ En este escenario ejecutaremos **Prometheus dentro de un contenedor Docker** uti
 Los archivos necesarios para ejecutar Prometheus ya han sido proporcionados en el entorno de Killercoda. Encontrarás la siguiente estructura:
 
 ```text
-~/grafana-basics/
+~/prometheus-grafana-observability/
 ├── docker-compose.yml
 └── prometheus/
     └── prometheus.yml
@@ -44,7 +44,7 @@ Por lo tanto, no es necesario crear estos archivos manualmente.
 Primero, accederemos al directorio donde se encuentran los archivos:
 
 ```bash
-cd ~/grafana-basics
+cd ~/prometheus-grafana-observability
 ```{{exec}}
 
 Podemos comprobar que los archivos están disponibles:
