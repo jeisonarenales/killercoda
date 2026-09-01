@@ -1,8 +1,8 @@
 {
-    "items": [
-        {
-            "path": "observability",
-            "title": "Observabilidad"
-        }
-    ]
+  "items": [
+    {
+      "path": "observability",
+      "title": "Observabilidad"
+    }
+  ]
 }

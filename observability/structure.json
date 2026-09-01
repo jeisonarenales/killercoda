@@ -1,5 +1,8 @@
 {
   "items": [
-    { "path": "grafana-basics", "title": "Fundamentos de Grafana" }
+    {
+      "path": "prometheus-grafana-observability",
+      "title": "Construye tu primer sistema de Observabilidad con Prometheus y Grafana"
+    }
   ]
 }

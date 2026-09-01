@@ -13,7 +13,7 @@ El servicio de Grafana ya está definido en nuestro archivo `docker-compose.yml`
 Primero, accederemos al directorio del proyecto:
 
 ```bash
-cd ~/grafana-basics
+cd ~/prometheus-grafana-observability
 ```{{exec}}
 
 Podemos revisar que el servicio `grafana` está definido en el archivo:
