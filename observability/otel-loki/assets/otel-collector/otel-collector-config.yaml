@@ -1,0 +1,25 @@
+receivers:
+  file_log/system:
+    include:
+      - /var/log/*.log
+
+  file_log/nginx:
+    include:
+      - /var/log/nginx/*.log
+processors:
+  batch:
+
+exporters:
+  otlphttp/loki:
+    endpoint: http://localhost:3100/otlp
+
+service:
+  pipelines:
+    logs:
+      receivers:
+        - file_log/system
+        - file_log/nginx
+      processors:
+        - batch
+      exporters:
+        - otlphttp/loki
