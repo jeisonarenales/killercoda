@@ -27,10 +27,10 @@ apt-get -y install wget
 cd "${WORK_DIR}"
 
 wget -O "${DEB_FILE}" "${DOWNLOAD_URL}"
-wget -O checksums.txt "https://github.com/open-telemetry/opentelemetry-collector-releases/releases/download/v${OTELCOL_CONTRIB_VERSION}/opentelemetry-collector-releases_otelcol-contrib_checksums.txt"
+wget -O "${DEB_FILE}.sha256" "${DOWNLOAD_URL}.sha256"
 
 # Verify checksum before installing anything downloaded from the internet
-if ! grep "${DEB_FILE}$" checksums.txt | sha256sum -c -; then
+if ! sha256sum -c "${DEB_FILE}.sha256"; then
   echo "ERROR: checksum verification failed for ${DEB_FILE}" >&2
   exit 1
 fi
