@@ -3,6 +3,10 @@
     {
       "path": "prometheus-grafana-observability",
       "title": "Construye tu primer sistema de Observabilidad con Prometheus y Grafana"
+    },
+    {
+      "path": "otel-loki",
+      "title": "Working in progress"
     }
   ]
 }

@@ -1,0 +1,33 @@
+{
+  "title": "Working in progress",
+  "description": "Working in progress",
+  "details": {
+    "intro": {
+      "text": "intro.md",
+      "background": "background.sh"
+    },
+    "steps": [],
+    "assets": {
+      "host01": [
+        {
+          "file": "docker-compose.yml",
+          "target": "~/otel-loki"
+        },
+        {
+          "file": "otel-collector/otel-collector-config.yaml",
+          "target": "~/otel-loki/otel-collector"
+        },
+        {
+          "file": "loki/loki-config.yaml",
+          "target": "~/otel-loki/loki"
+        }
+      ]
+    },
+    "finish": {
+      "text": "finish.md"
+    }
+  },
+  "backend": {
+    "imageid": "ubuntu"
+  }
+}
