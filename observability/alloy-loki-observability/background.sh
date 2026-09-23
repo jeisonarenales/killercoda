@@ -12,3 +12,8 @@ echo "deb [signed-by=/etc/apt/keyrings/grafana.asc] https://apt.grafana.com stab
 
 apt-get update
 apt-get install alloy
+
+sed 's/CUSTOM_ARGS=""/CUSTOM_ARGS="--server.http.listen-addr=0.0.0.0:12345"/g' /etc/default/alloy
+
+sudo systemctl enable alloy.service
+sudo systemctl start alloy
