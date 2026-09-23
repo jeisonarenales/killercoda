@@ -11,15 +11,15 @@
       "host01": [
         {
           "file": "docker-compose.yml",
-          "target": "~/otel-loki"
+          "target": "~/alloy-loki-observability"
         },
         {
           "file": "otel-collector/otel-collector-config.yaml",
-          "target": "~/otel-loki/otel-collector"
+          "target": "~/alloy-loki-observability/otel-collector"
         },
         {
-          "file": "loki/loki-config.yaml",
-          "target": "~/otel-loki/loki"
+          "file": "alloy/config.alloy",
+          "target": "~/alloy-loki-observability/alloy"
         }
       ]
     },

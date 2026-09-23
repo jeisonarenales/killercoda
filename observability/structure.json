@@ -5,7 +5,7 @@
       "title": "Construye tu primer sistema de Observabilidad con Prometheus y Grafana"
     },
     {
-      "path": "otel-loki",
+      "path": "alloy-loki-observability",
       "title": "Working in progress"
     }
   ]
