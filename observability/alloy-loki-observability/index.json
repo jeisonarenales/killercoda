@@ -6,7 +6,11 @@
       "text": "intro.md",
       "background": "background.sh"
     },
-    "steps": [],
+    "steps": [
+      {
+        "text": "step1.md"
+      }
+    ],
     "assets": {
       "host01": [
         {
