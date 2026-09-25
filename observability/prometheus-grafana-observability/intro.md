@@ -1,6 +1,6 @@
 # Introducción
 
-En este escenario aprenderás a configurar una solución básica de monitorización para un servidor Ubuntu utilizando **Grafana, Prometheus y Node Exporter**.
+En este escenario aprenderás a configurar una solución básica de observabilidad enfocada en métricas para un servidor Ubuntu utilizando **Grafana, Prometheus y Node Exporter**.
 
 ## ¿Qué es Grafana?
 

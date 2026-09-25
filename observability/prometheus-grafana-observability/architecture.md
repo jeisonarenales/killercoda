@@ -1,6 +1,6 @@
 ## Arquitectura
 
-En este escenario construiremos una solución básica de monitorización utilizando **Grafana, Prometheus y Node Exporter**.
+En este escenario construiremos una solución básica de observabilidad enfocada en métricas utilizando **Grafana, Prometheus y Node Exporter**.
 
 A alto nivel, la arquitectura estará compuesta por los siguientes componentes:
 
