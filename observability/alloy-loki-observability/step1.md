@@ -62,16 +62,13 @@ Al instalar Alloy mediante el paquete de Ubuntu, se configura automáticamente c
 
 ## 5. Configurar el acceso a la interfaz de Alloy
 
-Por defecto, la interfaz HTTP de Alloy escucha en 127.0.0.1:12345, lo que significa que solamente puede accederse desde el propio servidor.
+Por defecto, la interfaz HTTP de Alloy escucha en `127.0.0.1:12345`, lo que significa que solamente puede accederse desde el propio servidor.
 
-Como estamos trabajando en un entorno de Killercoda, necesitamos permitir que la interfaz pueda ser accesible desde fuera del servidor.
+Como estamos trabajando en un entorno de **Killercoda**, necesitamos permitir que la interfaz pueda ser accesible desde fuera del servidor.
 
-Para ello, agregaremos el siguiente parámetro a la configuración del servicio:
-```bash
---server.http.listen-addr=0.0.0.0:12345
-```
+Para ello, agregaremos el siguiente parámetro a la configuración del servicio: `--server.http.listen-addr=0.0.0.0:12345`
 
-Este parámetro indica a Alloy que escuche en el puerto 12345 en todas las interfaces de red.
+Este parámetro indica a Alloy que escuche en el puerto `12345` en todas las interfaces de red.
 
 Ejecutaremos el siguiente comando para configurar este parámetro:
 
@@ -120,11 +117,13 @@ Finalmente, podemos acceder a la interfaz web de Alloy:
 
 Desde esta interfaz podremos consultar información sobre el estado de Alloy y, más adelante, comprobar los componentes que utilizaremos para recopilar nuestros logs.
 
+![Grafana Alloy Dashboard](./assets/img/grafana-alloy-dashboard.png)
+
 ## Resumen
 
 En este paso hemos:
 
-- Instalado Grafana Alloy en nuestro servidor Ubuntu.
+- Instalado **Grafana Alloy** en nuestro servidor Ubuntu.
 - Agregado el repositorio oficial de Grafana.
 - Configurado Alloy para que su interfaz HTTP sea accesible desde Killercoda.
 - Habilitado e iniciado el servicio de Alloy.
