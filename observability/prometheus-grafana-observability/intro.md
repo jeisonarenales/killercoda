@@ -20,7 +20,7 @@ En este escenario utilizaremos Docker para ejecutar **Grafana y Prometheus**. No
 
 ## ¿Qué construiremos?
 
-A lo largo del escenario construiremos una solución de monitorización en la que:
+A lo largo del escenario construiremos una solución de observabilidad en la que:
 
 * **Node Exporter** recopilará y expondrá las métricas del servidor Ubuntu.
 * **Prometheus** realizará un *scrape* de las métricas expuestas por Node Exporter y las almacenará.
