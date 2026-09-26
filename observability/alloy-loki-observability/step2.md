@@ -146,4 +146,6 @@ En este paso hemos:
 * Comprobado que Grafana Loki se encuentra disponible.
 * Accedido a la interfaz web de Grafana.
 
-En el siguiente paso utilizaremos Grafana para configurar **Grafana Loki como data source** y poder consultar nuestros logs.
+En el siguiente paso continuaremos preparando nuestro servidor Ubuntu. **Instalaremos NGINX**, que utilizaremos para generar logs de acceso y errores.
+
+También configuraremos **Grafana Loki como data source en Grafana**, para que podamos consultar posteriormente los logs recopilados por Grafana Alloy.
