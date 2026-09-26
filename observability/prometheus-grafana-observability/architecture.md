@@ -6,14 +6,14 @@ A alto nivel, la arquitectura estará compuesta por los siguientes componentes:
 
 ![Arquitectura de Grafana y Prometheus](./assets/img/architecture.png)
 
-* **Ubuntu Linux:** servidor donde se ejecutará nuestro entorno de monitorización.
+* **Ubuntu Linux:** servidor donde se ejecutará nuestro entorno de observabilidad enfocada en métricas.
 * **Docker:** utilizado para ejecutar Grafana y Prometheus.
 * **Grafana:** herramienta utilizada para consultar y visualizar las métricas mediante dashboards.
 * **Prometheus:** sistema de monitorización encargado de recopilar y almacenar las métricas.
 * **Node Exporter:** componente que expone las métricas del sistema operativo, como CPU, memoria, disco y red.
 * **Web Browser:** utilizado para acceder a la interfaz de Grafana.
 
-### Flujo de monitorización
+### Flujo de observabilidad enfocada en métricas
 
 El flujo de datos entre los componentes será el siguiente:
 

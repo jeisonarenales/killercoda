@@ -1,6 +1,6 @@
 # Paso 4: Importar un dashboard de la comunidad de Grafana
 
-Hasta ahora hemos construido nuestra solución de monitorización paso a paso:
+Hasta ahora hemos construido nuestra solución de observabilidad enfocada en métricas paso a paso:
 
 - **Node Exporter** recopila y expone las métricas del servidor Ubuntu.
 - **Prometheus** recopila y almacena estas métricas.
@@ -131,7 +131,7 @@ En este paso hemos:
 
 # ¡Felicitaciones!
 
-Has completado el escenario y construido una solución básica de monitorización utilizando **Node Exporter, Prometheus y Grafana.**
+Has completado el escenario y construido una solución básica de observabilidad enfocada en métricas utilizando **Node Exporter, Prometheus y Grafana.**
 
 La solución final permite recopilar, almacenar y visualizar las métricas de un servidor Linux:
 
