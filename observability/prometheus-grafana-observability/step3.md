@@ -1,6 +1,6 @@
 # Paso 3: Instalar y configurar Grafana
 
-En los pasos anteriores instalamos **Node Exporter** y **Prometheus**. Ahora agregaremos **Grafana** a nuestra solución de monitorización.
+En los pasos anteriores instalamos **Node Exporter** y **Prometheus**. Ahora agregaremos **Grafana** a nuestra solución de observabilidad enfocada en métricas.
 
 Grafana será la herramienta que utilizaremos para consultar las métricas almacenadas en Prometheus y visualizarlas mediante gráficos y dashboards.
 

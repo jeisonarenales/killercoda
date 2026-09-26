@@ -1,6 +1,6 @@
 ## Gracias por completar el escenario
 
-Espero que este laboratorio te haya ayudado a comprender mejor cómo funcionan **Prometheus, Grafana y Node Exporter**, y cómo pueden utilizarse juntos para construir una solución de monitorización.
+Espero que este laboratorio te haya ayudado a comprender mejor cómo funcionan **Prometheus, Grafana y Node Exporter**, y cómo pueden utilizarse juntos para construir una solución de observabilidad enfocada en métricas.
 
 Si encontraste útil este escenario, **compártelo con otras personas** a las que pueda resultarles interesante. Esto ayuda a que más personas puedan descubrir y aprender estas tecnologías.
 
