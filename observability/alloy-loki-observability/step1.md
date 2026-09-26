@@ -93,7 +93,7 @@ sudo systemctl status alloy --no-pager
 ```{{exec}}
 
 Deberíamos ver un estado similar a:
-```bash
+```text
 Active: active (running)
 ```
 
