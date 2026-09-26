@@ -1,6 +1,7 @@
 services:
   loki:
     image: grafana/loki:3.0.0
+    container_name: loki
     restart: unless-stopped
     ports:
       - "3100:3100"
@@ -8,6 +9,7 @@ services:
 
   grafana:
     image: grafana/grafana:11.6
+    container_name: grafana
     restart: unless-stopped
     ports:
       - "3000:3000"

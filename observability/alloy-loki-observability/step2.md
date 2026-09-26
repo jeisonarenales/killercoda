@@ -27,7 +27,7 @@ cd ~/alloy-loki-observability
 Podemos revisar que el servicio `loki` está definido en el archivo:
 
 ```bash
-sed -n '1,7p;8q' docker-compose.yml
+sed -n '1,8p;9q' docker-compose.yml
 ```{{exec}}
 
 El servicio de Grafana Loki estará disponible en el puerto `3100` del servidor.
@@ -91,7 +91,7 @@ El servicio de Grafana ya está definido en nuestro archivo `docker-compose.yml`
 Podemos revisar que el servicio `grafana` está definido en el archivo:
 
 ```bash
-sed -n '1,1p;9,22p;23q' docker-compose.yml
+sed -n '1,1p;10,24p;25q' docker-compose.yml
 ```{{exec}}
 
 El servicio utiliza la imagen oficial de Grafana:
@@ -132,6 +132,8 @@ Grafana está disponible en el puerto `3000`.
 Puedes acceder a la interfaz web utilizando el siguiente enlace:
 
 [Grafana]({{TRAFFIC_HOST1_3000}})
+
+![Grafana Home](./assets/img/grafana-home.png)
 
 En este escenario no será necesario introducir credenciales para acceder a Grafana. El entorno está configurado para permitir el acceso anónimo con permisos de administrador.
 
