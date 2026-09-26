@@ -21,11 +21,11 @@
           "target": "~/alloy-loki-observability"
         },
         {
-          "file": "otel-collector/otel-collector-config.yaml",
-          "target": "~/alloy-loki-observability/otel-collector"
+          "file": "grafana/*.*",
+          "target": "~/alloy-loki-observability/grafana"
         },
         {
-          "file": "alloy/config.alloy",
+          "file": "alloy/*.*",
           "target": "~/alloy-loki-observability/alloy"
         }
       ]
