@@ -1,30 +1,25 @@
-local.file_match "local_files" {
-  path_targets = [{"__path__" = "/var/log/*.log"}]
-  sync_period = "5s"
-}
-
-loki.source.file "log_scrape" {
-  targets    = local.file_match.local_files.targets
-  forward_to = [loki.process.filter_logs.receiver]
-  tail_from_end = true
-}
-
-loki.process "filter_logs" {
-  stage.drop {
-    source = ""
-    expression  = ".*Connection closed by authenticating user root"
-    drop_counter_reason = "noisy"
+loki.source.journal "system" {
+  labels = {
+    service = "system",
   }
-  forward_to = [loki.write.grafana_loki.receiver]
+  forward_to = [loki.write.endpoint.receiver]
 }
 
-loki.write "grafana_loki" {
+local.file_match "nginx" {
+  path_targets = [{
+    "__path__" = "/var/log/nginx/*log",
+    "host"     = "grafana",
+    "service"  = "nginx",
+  }]
+}
+
+loki.source.file "nginx" {
+  targets    = local.file_match.nginx.targets
+  forward_to = [loki.write.endpoint.receiver]
+}
+
+loki.write "endpoint" {
   endpoint {
     url = "http://localhost:3100/loki/api/v1/push"
-
-    // basic_auth {
-    //  username = "admin"
-    //  password = "admin"
-    // }
   }
 }

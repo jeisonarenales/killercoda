@@ -1,203 +1,132 @@
-# Paso 3: Instalar NGINX y configurar Loki en Grafana
+# Paso 3: Instalar Grafana Alloy
 
-En el paso anterior desplegamos **Grafana** y **Grafana Loki** utilizando Docker.
+En los pasos anteriores desplegamos **Grafana** y **Grafana Loki**, y preparamos **NGINX** para generar logs que utilizaremos durante este escenario.
 
-Ahora prepararemos nuestro servidor Ubuntu para generar logs que posteriormente recopilaremos con Grafana Alloy.
+Ahora instalaremos **Grafana Alloy** en nuestro servidor Ubuntu. Alloy será el agente encargado de recopilar los logs de NGINX y del sistema operativo, procesarlos y enviarlos a **Grafana Loki**, donde podremos consultarlos y visualizarlos desde Grafana.
 
-Para ello, primero instalaremos **NGINX** y comprobaremos que está funcionando correctamente. Después configuraremos **Grafana Loki como data source de Grafana** y enviaremos un log de prueba para verificar que Grafana puede consultar los datos almacenados en Loki.
+## 1. Instalar GPG
 
-## NGINX
+Comenzaremos asegurándonos de que **GPG** esté instalado en nuestro servidor.
 
-### ¿Qué es NGINX?
-
-**[NGINX](https://nginx.org/)** es un servidor web y proxy inverso de alto rendimiento. Es software libre y de código abierto, y es ampliamente utilizado para servir contenido web y gestionar tráfico HTTP.
-
-En este escenario utilizaremos NGINX principalmente porque genera **logs de acceso y errores** que posteriormente podremos recopilar con Grafana Alloy.
-
-### 1. Instalar NGINX
-
-Instalaremos NGINX directamente en nuestro servidor utilizando los paquetes disponibles para Ubuntu:
-
-```bash
-sudo apt-get install nginx -y
-```{{exec}}
-
-### 2. Verificar la instalación
-
-Primero podemos comprobar la versión de NGINX instalada:
-
-```bash
-nginx -v
-```{{exec}}
-
-Ahora comprobaremos que el servicio se encuentra ejecutándose correctamente:
-
-```bash
-sudo systemctl status nginx --no-pager
-```{{exec}}
-
-Deberíamos ver un estado similar a:
-
-```text
-Active: active (running)
-```
-
-### 3. Acceder a la página de inicio de NGINX
-
-Finalmente, podemos comprobar que NGINX está funcionando accediendo a su página de bienvenida:
-
-[Página de inicio de NGINX]({{TRAFFIC_HOST1_80}})
-
-Si todo funciona correctamente, veremos la página de bienvenida de NGINX.
-
-Al acceder a esta página también estaremos generando nuestro primer registro en el archivo de logs de acceso de NGINX.
-
-## Configurar Loki en Grafana
-
-Ahora que tenemos NGINX funcionando, vamos a configurar la conexión entre **Grafana y Grafana Loki**.
-
-### 1. ¿Qué es un data source?
-
-Grafana puede obtener información desde diferentes fuentes de datos, como bases de datos, sistemas de monitorización y sistemas de almacenamiento de logs.
-
-Estas fuentes de datos se configuran en Grafana como **data sources**.
-
-En nuestro escenario utilizaremos **Grafana Loki como data source**:
-
-```text
-Grafana Alloy
-      │
-      │ send logs
-      ▼
-  Grafana Loki
-      ▲
-      │
-      │ query
-      │
-   Grafana
-```
-
-**Grafana Loki** se encarga de almacenar y consultar los logs, mientras que **Grafana** se conecta a Loki para consultar y visualizar esos logs.
-
-> **Nota:** En este momento todavía no hemos configurado Alloy para enviar nuestros logs a Loki. Primero vamos a comprobar que la comunicación entre Grafana y Loki funciona correctamente.
-
-### 2. Agregar Grafana Loki como data source
-
-Desde la interfaz de Grafana, abre el menú de configuración y selecciona:
-
-**Connections → Data sources**
-
-Haz clic en:
-
-**Add new data source**
-
-![Grafana Datasource 1](./assets/img/grafana-datasource-1.png)
-
-Selecciona:
-
-**Loki**
-
-![Grafana Datasource 2](./assets/img/grafana-datasource-2.png)
-
-Ahora debemos indicar a Grafana dónde puede encontrar nuestro servidor de Loki.
-
-Como **Grafana y Loki se ejecutan dentro del mismo entorno Docker Compose**, podemos utilizar el nombre del servicio `loki` como hostname.
-
-En el campo **Connection → URL**, introduce:
-
-```text
-http://loki:3100
-```{{copy}}
-
-La configuración debería quedar similar a:
-
-![Grafana Datasource 3](./assets/img/grafana-datasource-3.png)
-
-> **Importante:** Aquí no utilizamos `localhost:3100`. Desde el contenedor de Grafana, `localhost` hace referencia al propio contenedor de Grafana. Utilizamos `loki` porque corresponde al nombre del servicio definido en Docker Compose. Docker permite que los servicios de un mismo entorno se comuniquen utilizando sus nombres de servicio.
-
-No es necesario modificar las demás opciones para este escenario.
-
-Haz clic en:
-
-**Save & test**
-
-![Grafana Datasource 4](./assets/img/grafana-datasource-4.png)
-
-### 3. Verificar la conexión
-
-Si la configuración es correcta, Grafana debería mostrar un mensaje indicando que el data source está funcionando correctamente.
-
-Esto confirma que Grafana puede comunicarse con Loki utilizando:
-
-```text
-Grafana → http://loki:3100 → Loki
-```
-
-Ahora Grafana está preparado para consultar los logs almacenados en Loki.
-
-### 4. Enviar un log de prueba a Loki
-
-Antes de configurar Grafana Alloy, vamos a enviar manualmente un log de prueba a Loki.
-
-Esto nos permitirá comprobar que todo el flujo entre **Loki y Grafana** funciona correctamente antes de continuar.
+GPG nos permitirá verificar las firmas digitales utilizadas por el repositorio de Grafana y comprobar que los paquetes que instalaremos provienen de una fuente confiable.
 
 Ejecuta el siguiente comando:
 
 ```bash
-curl -v -H "Content-Type: application/json" -XPOST -s "http://localhost:3100/loki/api/v1/push" --data-raw \
-"{\"streams\": [{ \"stream\": { \"service_name\": \"loki-canary\", \"level\": \"info\", \"hostname\": \"localhost\" }, \"values\": [ [ \"$(date +%s%N)\", \"Esto es un log de prueba a Grafana Loki\" ] ] }]}"
+sudo apt-get install gpg -y
 ```{{exec}}
 
-El comando anterior envía directamente un log a la API de Loki. Para este laboratorio no necesitamos profundizar todavía en el formato de la petición; lo importante es que estamos generando un dato que posteriormente podremos consultar desde Grafana.
+## 2. Agregar el repositorio de Grafana
 
-### 5. Consultar el log desde Grafana
+A continuación, agregaremos el repositorio oficial de Grafana a los repositorios de nuestro servidor.
 
-Ahora vamos a comprobar que el log que acabamos de enviar puede visualizarse desde Grafana.
+Primero crearemos el directorio donde almacenaremos la clave utilizada para verificar los paquetes:
 
-Para ello utilizaremos **Explore**, una herramienta de Grafana que permite consultar y analizar datos directamente desde un data source.
+```bash
+sudo mkdir -p /etc/apt/keyrings
+```{{exec}}
 
-1. Desde el menú lateral de Grafana, selecciona **Explore**.
+Ahora descargaremos la clave GPG del repositorio de Grafana:
 
-2. En la parte superior de la pantalla, selecciona el data source **Loki**.
+```bash
+sudo wget -O /etc/apt/keyrings/grafana.asc https://apt.grafana.com/gpg-full.key
+```{{exec}}
 
-3. En la sección **Label filters**, selecciona:
+Asignaremos los permisos necesarios para que APT pueda utilizar la clave:
 
-   `service_name = loki-canary`
+```bash
+sudo chmod 644 /etc/apt/keyrings/grafana.asc
+```{{exec}}
 
-4. En la parte superior derecha, haz clic en **Run query**.
+Finalmente, agregaremos el repositorio de Grafana:
 
-![Grafana Explore 1](./assets/img/grafana-explore-1.png)
+```bash
+echo "deb [signed-by=/etc/apt/keyrings/grafana.asc] https://apt.grafana.com stable main" | sudo tee /etc/apt/sources.list.d/grafana.list
+```{{exec}}
 
-Deberíamos poder visualizar el log que enviamos anteriormente:
+## 3. Actualizar los repositorios
 
-![Grafana Explore 2](./assets/img/grafana-explore-2.png)
+Ahora que hemos agregado el repositorio de Grafana, debemos actualizar la información de los paquetes disponibles:
+```bash
+sudo apt-get update
+```{{exec}}
 
-Esto confirma que **Grafana puede consultar correctamente los logs almacenados en Loki**.
+## 4. Instalar Grafana Alloy
+
+Con el repositorio configurado, podemos instalar Grafana Alloy:
+```bash
+sudo apt-get install alloy
+```{{exec}}
+
+Al instalar Alloy mediante el paquete de Ubuntu, se configura automáticamente como un servicio de systemd.
+
+## 5. Configurar el acceso a la interfaz de Alloy
+
+Por defecto, la interfaz HTTP de Alloy escucha en `127.0.0.1:12345`, lo que significa que solamente puede accederse desde el propio servidor.
+
+Como estamos trabajando en un entorno de **Killercoda**, necesitamos permitir que la interfaz pueda ser accesible desde fuera del servidor.
+
+Para ello, agregaremos el siguiente parámetro a la configuración del servicio: `--server.http.listen-addr=0.0.0.0:12345`
+
+Este parámetro indica a Alloy que escuche en el puerto `12345` en todas las interfaces de red.
+
+Ejecutaremos el siguiente comando para configurar este parámetro:
+
+```bash
+sed -i 's/^CUSTOM_ARGS=""/CUSTOM_ARGS="--server.http.listen-addr=0.0.0.0:12345"/g' /etc/default/alloy
+```{{exec}}
+
+> **Nota:** No estamos modificando la configuración de Alloy que utilizaremos para recopilar logs. Estamos configurando un parámetro del servicio que determina en qué dirección de red estará disponible su interfaz HTTP.
+
+## 6. Habilitar e iniciar Alloy
+
+Ahora podemos habilitar Alloy para que se inicie automáticamente y, al mismo tiempo, iniciar el servicio:
+```bash
+sudo systemctl enable --now alloy
+```{{exec}}
+
+## 7. Comprobar el estado del servicio
+
+Comprobemos que Alloy se está ejecutando correctamente:
+```bash
+sudo systemctl status alloy --no-pager
+```{{exec}}
+
+Deberíamos ver un estado similar a:
+```text
+Active: active (running)
+```
+
+También podemos comprobar que Alloy está listo utilizando su endpoint de health check:
+
+```bash
+curl http://localhost:12345/-/ready
+```{{exec}}
+
+Si todo funciona correctamente, veremos:
+
+```bash
+Alloy is ready.
+```
+
+## 8. Acceder a la interfaz de Grafana Alloy
+
+Finalmente, podemos acceder a la interfaz web de Alloy:
+
+[Grafana Alloy Dashboard]({{TRAFFIC_HOST1_12345}})
+
+Desde esta interfaz podremos consultar información sobre el estado de Alloy y, más adelante, comprobar los componentes que utilizaremos para recopilar nuestros logs.
+
+![Grafana Alloy Dashboard](./assets/img/grafana-alloy-dashboard.png)
 
 ## Resumen
 
 En este paso hemos:
 
-* Instalado **NGINX** en nuestro servidor Ubuntu.
-* Comprobado que NGINX se encuentra funcionando correctamente.
-* Configurado **Grafana Loki como data source** en Grafana.
-* Verificado que Grafana puede comunicarse correctamente con Loki.
-* Enviado un log de prueba directamente a Loki.
-* Consultado el log desde **Grafana Explore**.
-
-En este punto ya tenemos funcionando el backend y la herramienta de visualización:
-
-```text
-             Grafana Loki
-                  ▲
-                  │
-                  │ query
-                  │
-               Grafana
-                  ▲
-                  │
-                  │
-             Web Browser
-```
+- Instalado **Grafana Alloy** en nuestro servidor Ubuntu.
+- Agregado el repositorio oficial de Grafana.
+- Configurado Alloy para que su interfaz HTTP sea accesible desde Killercoda.
+- Habilitado e iniciado el servicio de Alloy.
+- Comprobado que Alloy se encuentra funcionando correctamente.
 
 En el siguiente paso configuraremos **Grafana Alloy** para que pueda leer los archivos de logs de **NGINX y del sistema Ubuntu** y enviarlos automáticamente a Grafana Loki.

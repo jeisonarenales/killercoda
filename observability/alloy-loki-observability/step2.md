@@ -1,153 +1,203 @@
-# Paso 2: Desplegar Grafana y Grafana Loki
+# Paso 2: Instalar NGINX y configurar Loki en Grafana
 
-En el paso anterior instalamos **Grafana Alloy**, que se está ejecutando directamente en nuestro servidor Ubuntu, y pudimos acceder a su interfaz web a través del puerto `12345`.
+En el paso anterior desplegamos **Grafana** y **Grafana Loki** utilizando Docker.
 
-Ahora utilizaremos **Docker** para desplegar **Grafana Loki** y **Grafana** en nuestro servidor.
+Ahora prepararemos nuestro servidor Ubuntu para generar logs que posteriormente recopilaremos con Grafana Alloy.
 
-## Grafana Loki
+Para ello, primero instalaremos **NGINX** y comprobaremos que está funcionando correctamente. Después configuraremos **Grafana Loki como data source de Grafana** y enviaremos un log de prueba para verificar que Grafana puede consultar los datos almacenados en Loki.
 
-**Grafana Loki** es un sistema de agregación de logs diseñado para almacenar y consultar los logs de aplicaciones e infraestructura.
+## NGINX
 
-En nuestro escenario, Grafana Loki almacenará los logs enviados por **Grafana Alloy**:
+### ¿Qué es NGINX?
+
+**[NGINX](https://nginx.org/)** es un servidor web y proxy inverso de alto rendimiento. Es software libre y de código abierto, y es ampliamente utilizado para servir contenido web y gestionar tráfico HTTP.
+
+En este escenario utilizaremos NGINX principalmente porque genera **logs de acceso y errores** que posteriormente podremos recopilar con Grafana Alloy.
+
+### 1. Instalar NGINX
+
+Instalaremos NGINX directamente en nuestro servidor utilizando los paquetes disponibles para Ubuntu:
+
+```bash
+sudo apt-get install nginx -y
+```{{exec}}
+
+### 2. Verificar la instalación
+
+Primero podemos comprobar la versión de NGINX instalada:
+
+```bash
+nginx -v
+```{{exec}}
+
+Ahora comprobaremos que el servicio se encuentra ejecutándose correctamente:
+
+```bash
+sudo systemctl status nginx --no-pager
+```{{exec}}
+
+Deberíamos ver un estado similar a:
 
 ```text
-Grafana Alloy → Grafana Loki
-````
-
-### 1. Iniciar Grafana Loki
-
-El servicio de Loki ya está definido en nuestro archivo `docker-compose.yml`.
-
-Primero, accederemos al directorio del proyecto:
-
-```bash
-cd ~/alloy-loki-observability
-```{{exec}}
-
-Podemos revisar que el servicio `loki` está definido en el archivo:
-
-```bash
-sed -n '1,8p;9q' docker-compose.yml
-```{{exec}}
-
-El servicio de Grafana Loki estará disponible en el puerto `3100` del servidor.
-
-Utilizaremos la imagen oficial de Grafana Loki:
-
-```yaml
-loki:
-  image: grafana/loki:3.0.0
+Active: active (running)
 ```
 
-Para iniciar Grafana Loki, ejecutaremos:
+### 3. Acceder a la página de inicio de NGINX
 
-```bash
-docker-compose up -d loki
-```{{exec}}
+Finalmente, podemos comprobar que NGINX está funcionando accediendo a su página de bienvenida:
 
-Podemos comprobar que el contenedor está ejecutándose:
+[Página de inicio de NGINX]({{TRAFFIC_HOST1_80}})
 
-```bash
-docker-compose ps
-```{{exec}}
+Si todo funciona correctamente, veremos la página de bienvenida de NGINX.
 
-Deberías ver el contenedor `loki` con un estado similar a:
+Al acceder a esta página también estaremos generando nuestro primer registro en el archivo de logs de acceso de NGINX.
+
+## Configurar Loki en Grafana
+
+Ahora que tenemos NGINX funcionando, vamos a configurar la conexión entre **Grafana y Grafana Loki**.
+
+### 1. ¿Qué es un data source?
+
+Grafana puede obtener información desde diferentes fuentes de datos, como bases de datos, sistemas de monitorización y sistemas de almacenamiento de logs.
+
+Estas fuentes de datos se configuran en Grafana como **data sources**.
+
+En nuestro escenario utilizaremos **Grafana Loki como data source**:
 
 ```text
-NAME    STATUS
-loki    Up
+Grafana Alloy
+      │
+      │ send logs
+      ▼
+  Grafana Loki
+      ▲
+      │
+      │ query
+      │
+   Grafana
 ```
 
-También podemos consultar los últimos logs del contenedor:
+**Grafana Loki** se encarga de almacenar y consultar los logs, mientras que **Grafana** se conecta a Loki para consultar y visualizar esos logs.
 
-```bash
-docker-compose logs --tail=50 loki
-```{{exec}}
+> **Nota:** En este momento todavía no hemos configurado Alloy para enviar nuestros logs a Loki. Primero vamos a comprobar que la comunicación entre Grafana y Loki funciona correctamente.
 
-Finalmente, podemos comprobar que Loki está listo utilizando su endpoint de health check:
+### 2. Agregar Grafana Loki como data source
 
-```bash
-curl http://localhost:3100/ready
-```{{exec}}
+Desde la interfaz de Grafana, abre el menú de configuración y selecciona:
 
-Si todo funciona correctamente, veremos:
+**Connections → Data sources**
+
+Haz clic en:
+
+**Add new data source**
+
+![Grafana Datasource 1](./assets/img/grafana-datasource-1.png)
+
+Selecciona:
+
+**Loki**
+
+![Grafana Datasource 2](./assets/img/grafana-datasource-2.png)
+
+Ahora debemos indicar a Grafana dónde puede encontrar nuestro servidor de Loki.
+
+Como **Grafana y Loki se ejecutan dentro del mismo entorno Docker Compose**, podemos utilizar el nombre del servicio `loki` como hostname.
+
+En el campo **Connection → URL**, introduce:
 
 ```text
-ready
-```
+http://loki:3100
+```{{copy}}
 
-## Grafana
+La configuración debería quedar similar a:
 
-**Grafana** será la herramienta que utilizaremos para consultar y visualizar los logs almacenados en Grafana Loki.
+![Grafana Datasource 3](./assets/img/grafana-datasource-3.png)
 
-En este paso nos concentraremos únicamente en iniciar Grafana y verificar que podemos acceder a su interfaz web.
+> **Importante:** Aquí no utilizamos `localhost:3100`. Desde el contenedor de Grafana, `localhost` hace referencia al propio contenedor de Grafana. Utilizamos `loki` porque corresponde al nombre del servicio definido en Docker Compose. Docker permite que los servicios de un mismo entorno se comuniquen utilizando sus nombres de servicio.
 
-En el siguiente paso configuraremos **Grafana Loki como data source de Grafana**.
+No es necesario modificar las demás opciones para este escenario.
 
-### 2. Iniciar Grafana
+Haz clic en:
 
-El servicio de Grafana ya está definido en nuestro archivo `docker-compose.yml`.
+**Save & test**
 
-Podemos revisar que el servicio `grafana` está definido en el archivo:
+![Grafana Datasource 4](./assets/img/grafana-datasource-4.png)
 
-```bash
-sed -n '1,1p;10,24p;25q' docker-compose.yml
-```{{exec}}
+### 3. Verificar la conexión
 
-El servicio utiliza la imagen oficial de Grafana:
+Si la configuración es correcta, Grafana debería mostrar un mensaje indicando que el data source está funcionando correctamente.
 
-```yaml
-grafana:
-  image: grafana/grafana:11.6
-```
-
-Grafana estará disponible en el puerto `3000` del servidor.
-
-Para iniciar Grafana, ejecutaremos:
-
-```bash
-docker-compose up -d grafana
-```{{exec}}
-
-> **Nota:** Grafana puede tardar unos momentos en iniciar completamente después de ejecutar el comando anterior. **Espera un par de minutos antes de acceder a la interfaz web.** Si intentas acceder inmediatamente, es posible que inicialmente aparezca un error mientras el servidor termina de iniciar.
-
-Podemos comprobar que los contenedores están ejecutándose:
-
-```bash
-docker-compose ps
-```{{exec}}
-
-Deberías ver los servicios `loki` y `grafana` con un estado similar a:
+Esto confirma que Grafana puede comunicarse con Loki utilizando:
 
 ```text
-NAME      STATUS
-loki      Up
-grafana   Up
+Grafana → http://loki:3100 → Loki
 ```
 
-### 3. Acceder a Grafana
+Ahora Grafana está preparado para consultar los logs almacenados en Loki.
 
-Grafana está disponible en el puerto `3000`.
+### 4. Enviar un log de prueba a Loki
 
-Puedes acceder a la interfaz web utilizando el siguiente enlace:
+Antes de configurar Grafana Alloy, vamos a enviar manualmente un log de prueba a Loki.
 
-[Grafana]({{TRAFFIC_HOST1_3000}})
+Esto nos permitirá comprobar que todo el flujo entre **Loki y Grafana** funciona correctamente antes de continuar.
 
-![Grafana Home](./assets/img/grafana-home.png)
+Ejecuta el siguiente comando:
 
-En este escenario no será necesario introducir credenciales para acceder a Grafana. El entorno está configurado para permitir el acceso anónimo con permisos de administrador.
+```bash
+curl -v -H "Content-Type: application/json" -XPOST -s "http://localhost:3100/loki/api/v1/push" --data-raw \
+"{\"streams\": [{ \"stream\": { \"service_name\": \"loki-canary\", \"level\": \"info\", \"hostname\": \"localhost\" }, \"values\": [ [ \"$(date +%s%N)\", \"Esto es un log de prueba a Grafana Loki\" ] ] }]}"
+```{{exec}}
 
-Una vez dentro de Grafana, deberías poder visualizar la página principal de la aplicación.
+El comando anterior envía directamente un log a la API de Loki. Para este laboratorio no necesitamos profundizar todavía en el formato de la petición; lo importante es que estamos generando un dato que posteriormente podremos consultar desde Grafana.
+
+### 5. Consultar el log desde Grafana
+
+Ahora vamos a comprobar que el log que acabamos de enviar puede visualizarse desde Grafana.
+
+Para ello utilizaremos **Explore**, una herramienta de Grafana que permite consultar y analizar datos directamente desde un data source.
+
+1. Desde el menú lateral de Grafana, selecciona **Explore**.
+
+2. En la parte superior de la pantalla, selecciona el data source **Loki**.
+
+3. En la sección **Label filters**, selecciona:
+
+   `service_name = loki-canary`
+
+4. En la parte superior derecha, haz clic en **Run query**.
+
+![Grafana Explore 1](./assets/img/grafana-explore-1.png)
+
+Deberíamos poder visualizar el log que enviamos anteriormente:
+
+![Grafana Explore 2](./assets/img/grafana-explore-2.png)
+
+Esto confirma que **Grafana puede consultar correctamente los logs almacenados en Loki**.
 
 ## Resumen
 
 En este paso hemos:
 
-* Desplegado **Grafana Loki** utilizando Docker Compose.
-* Desplegado **Grafana** utilizando Docker Compose.
-* Comprobado que Grafana Loki se encuentra disponible.
-* Accedido a la interfaz web de Grafana.
+* Instalado **NGINX** en nuestro servidor Ubuntu.
+* Comprobado que NGINX se encuentra funcionando correctamente.
+* Configurado **Grafana Loki como data source** en Grafana.
+* Verificado que Grafana puede comunicarse correctamente con Loki.
+* Enviado un log de prueba directamente a Loki.
+* Consultado el log desde **Grafana Explore**.
 
-En el siguiente paso continuaremos preparando nuestro servidor Ubuntu. **Instalaremos NGINX**, que utilizaremos para generar logs de acceso y errores.
+En este punto ya tenemos funcionando el backend y la herramienta de visualización:
 
-También configuraremos **Grafana Loki como data source en Grafana**, para que podamos consultar posteriormente los logs recopilados por Grafana Alloy.
+```text
+             Grafana Loki
+                  ▲
+                  │
+                  │ query
+                  │
+               Grafana
+                  ▲
+                  │
+                  │
+             Web Browser
+```
+
+Ahora que tenemos nuestro backend de logs preparado y una fuente de logs funcionando, en el siguiente paso instalaremos **Grafana Alloy**, el componente que se encargará de recopilar los logs de NGINX y del sistema Ubuntu y enviarlos automáticamente a Grafana Loki.
