@@ -76,6 +76,8 @@ Entre las métricas que podemos visualizar se encuentran:
 
 El dashboard utiliza las métricas que Prometheus ha recopilado desde Node Exporter para generar estas visualizaciones.
 
+> **Nota:** Si ves pocos datos, cambia el rango de tiempo a _Last 15 minutes_.
+
 El flujo completo de nuestra solución ahora es:
 
 ```text
