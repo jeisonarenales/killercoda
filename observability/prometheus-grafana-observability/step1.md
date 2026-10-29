@@ -26,7 +26,7 @@ Primero descargaremos Node Exporter desde las versiones oficiales disponibles en
 En este escenario utilizaremos la versión `1.12.1`:
 
 ```bash
-wget https://github.com/prometheus/node_exporter/releases/download/v1.12.1/node_exporter-1.12.1.linux-amd64.tar.gz
+wget -nc https://github.com/prometheus/node_exporter/releases/download/v1.12.1/node_exporter-1.12.1.linux-amd64.tar.gz
 ```{{exec}}
 
 ## 2. Instalar Node Exporter
