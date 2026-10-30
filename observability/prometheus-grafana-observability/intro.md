@@ -41,4 +41,4 @@ A lo largo del escenario aprenderás a:
 * Crear un panel de visualización sencillo utilizando métricas obtenidas desde Prometheus y consultas escritas en **PromQL**.
 * Importar un **dashboard de la comunidad de Grafana** para visualizar las métricas del servidor.
 
-Al finalizar el escenario, tendrás una instalación funcional de **Prometheus y Grafana** capaz de recopilar y visualizar las métricas de un servidor Linux, además de una comprensión básica de cómo estos componentes trabajan juntos en una solución de monitorización.
+Al finalizar el escenario, tendrás una instalación funcional de **Prometheus y Grafana** capaz de recopilar y visualizar las métricas de un servidor Linux, además de una comprensión básica de cómo estos componentes trabajan juntos en una solución de observabilidad enfocada en métricas.
