@@ -14,6 +14,9 @@ services:
     ports:
       - "3500:3500"
     command:
+      - "-push=true"
+      - "-user=canary"
+      - "-interval=10s"
       - "-addr=loki:3100"
       - "-labelname=service_name"
       - "-labelvalue=loki-canary"

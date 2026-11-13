@@ -26,12 +26,12 @@
           "target": "~/alloy-loki-observability"
         },
         {
-          "file": "grafana/*.*",
-          "target": "~/alloy-loki-observability/grafana"
+          "file": "grafana/datasources/datasource.yml",
+          "target": "~/alloy-loki-observability"
         },
         {
           "file": "alloy/*.*",
-          "target": "~/alloy-loki-observability/alloy"
+          "target": "~/alloy-loki-observability"
         }
       ]
     },

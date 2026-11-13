@@ -38,7 +38,7 @@ Utilizaremos la imagen oficial de Grafana Loki:
 
 ```yaml
 loki:
-  image: grafana/loki:3.0.0
+  image: grafana/loki:3.7.3
 ```
 
 Para iniciar Grafana Loki, ejecutaremos:
@@ -93,7 +93,7 @@ El servicio de Grafana ya está definido en nuestro archivo `docker-compose.yml`
 Podemos revisar que el servicio `grafana` está definido en el archivo:
 
 ```bash
-sed -n '1,1p;10,24p;25q' docker-compose.yml
+sed -n '1,1p;35,47p;48q' docker-compose.yml
 ```{{exec}}
 
 El servicio utiliza la imagen oficial de Grafana:
