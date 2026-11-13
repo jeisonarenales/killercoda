@@ -19,7 +19,7 @@ En este escenario utilizaremos NGINX principalmente porque genera **logs de acce
 Instalaremos NGINX directamente en nuestro servidor utilizando los paquetes disponibles para Ubuntu:
 
 ```bash
-sudo apt-get install nginx -y
+sudo apt-get update -qq && sudo apt-get install nginx -y
 ```{{exec}}
 
 ### 2. Verificar la instalación

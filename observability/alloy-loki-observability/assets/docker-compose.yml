@@ -1,11 +1,36 @@
 services:
   loki:
-    image: grafana/loki:3.0.0
+    image: grafana/loki:3.7.3
     container_name: loki
     restart: unless-stopped
     ports:
       - "3100:3100"
     command: -config.file=/etc/loki/local-config.yaml
+
+  loki-canary:
+    image: grafana/loki-canary:3.7.3
+    container_name: loki-canary
+    restart: unless-stopped
+    ports:
+      - "3500:3500"
+    command:
+      - "-addr=loki:3100"
+      - "-labelname=service_name"
+      - "-labelvalue=loki-canary"
+    depends_on:
+      - loki
+
+  prometheus:
+    image: prom/prometheus:v3
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    restart: unless-stopped
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    depends_on:
+      - loki
 
   grafana:
     image: grafana/grafana:11.6
@@ -18,7 +43,9 @@ services:
       - GF_AUTH_ANONYMOUS_ENABLED=true
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
     volumes:
+      - ./grafana/datasources:/etc/grafana/provisioning/datasources
       - grafana-storage:/var/lib/grafana
 
 volumes:
   grafana-storage: { }
+  prometheus-data: { }
