@@ -26,7 +26,7 @@
           "target": "~/alloy-loki-observability"
         },
         {
-          "file": "grafana/datasources/datasource.yml",
+          "file": "grafana/**",
           "target": "~/alloy-loki-observability"
         },
         {
