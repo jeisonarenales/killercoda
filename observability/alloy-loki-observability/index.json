@@ -30,6 +30,10 @@
           "target": "~/alloy-loki-observability"
         },
         {
+          "file": "prometheus/**",
+          "target": "~/alloy-loki-observability"
+        },
+        {
           "file": "alloy/*.*",
           "target": "~/alloy-loki-observability"
         }

@@ -34,6 +34,7 @@ services:
       - prometheus-data:/prometheus
     depends_on:
       - loki
+      - loki-canary
 
   grafana:
     image: grafana/grafana:11.6
@@ -48,6 +49,9 @@ services:
     volumes:
       - ./grafana/datasources:/etc/grafana/provisioning/datasources
       - grafana-storage:/var/lib/grafana
+    depends_on:
+      - loki
+      - prometheus
 
 volumes:
   grafana-storage: { }
