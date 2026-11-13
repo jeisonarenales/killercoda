@@ -1,25 +1,144 @@
-loki.source.journal "system" {
-  labels = {
-    service = "system",
-  }
-  forward_to = [loki.write.endpoint.receiver]
-}
+// ---------------------------------------------------------------------------
+// Grafana Alloy: recolecta logs de NGINX y del journal de systemd y los envía
+// a Loki.
+//
+// Flujo:
+//   local.file_match "nginx" ─► loki.source.file "nginx" ─► loki.process "nginx" ─┐
+//                                                                                 ├─► loki.write "endpoint" ─► Loki
+//   loki.relabel "journal" ─► loki.source.journal "system" ───────────────────────┘
+//
+// Cada componente expone "exports" (salidas) que otros componentes consumen,
+// así se encadenan: <tipo>.<nombre>.<export>, por ejemplo
+// loki.write.endpoint.receiver.
+// ---------------------------------------------------------------------------
 
-local.file_match "nginx" {
-  path_targets = [{
-    "__path__" = "/var/log/nginx/*log",
-    "host"     = "grafana",
-    "service"  = "nginx",
-  }]
-}
-
-loki.source.file "nginx" {
-  targets    = local.file_match.nginx.targets
-  forward_to = [loki.write.endpoint.receiver]
-}
-
+// 1) DESTINO: envía todos los logs recibidos a Loki mediante su API HTTP.
+//    El orden en el archivo no importa; Alloy resuelve las dependencias.
 loki.write "endpoint" {
-  endpoint {
-    url = "http://localhost:3100/loki/api/v1/push"
-  }
+	endpoint {
+		// Alloy corre en el host y Loki publica el puerto 3100, por eso localhost.
+		url = "http://localhost:3100/loki/api/v1/push"
+	}
+}
+
+// 2) NGINX (parte A): descubre QUÉ archivos leer y qué etiquetas asignarles.
+//    Este componente no lee el contenido, solo produce la lista de targets.
+//    Se declara un target por archivo para distinguir access y error con la
+//    etiqueta log_type, sin necesidad de parsear nada.
+local.file_match "nginx" {
+	path_targets = [
+		{
+			// "__path__" es la etiqueta especial con la ruta del archivo a leer.
+			// Alloy debe tener permiso de lectura (usuario alloy en el grupo adm).
+			"__path__" = "/var/log/nginx/access.log",
+			// Etiquetas fijas: sirven para filtrar en LogQL, p. ej. {service="nginx"}.
+			// Evita valores que cambien constantemente: cada combinación distinta
+			// de etiquetas crea un stream nuevo en Loki (cardinalidad).
+			"host"     = "grafana",
+			"service"  = "nginx",
+			"log_type" = "access",
+		},
+		{
+			"__path__" = "/var/log/nginx/error.log",
+			"host"     = "grafana",
+			"service"  = "nginx",
+			"log_type" = "error",
+		},
+	]
+}
+
+// 2) NGINX (parte B): lee las líneas de los archivos descubiertos. Guarda su
+//    posición de lectura, así que al reiniciar Alloy no reenvía logs ya
+//    enviados. Añade además la etiqueta "filename" automáticamente.
+//    Las líneas pasan por loki.process antes de llegar a Loki.
+loki.source.file "nginx" {
+	targets    = local.file_match.nginx.targets
+	forward_to = [loki.process.nginx.receiver]
+}
+
+// 2) NGINX (parte C): parsea las líneas y extrae datos útiles.
+//    Los stages se ejecutan en orden; stage.match limita cada bloque a un
+//    tipo de log según sus etiquetas.
+loki.process "nginx" {
+	// --- access.log (formato "combined", el predeterminado de NGINX) ---------
+	// Ejemplo:
+	// 10.0.0.1 - - [02/Jan/2026:15:04:05 +0000] "GET /index.html HTTP/1.1" 200 612 "-" "curl/8.5.0"
+	stage.match {
+		selector = "{log_type=\"access\"}"
+
+		// Extrae campos con una expresión regular a un mapa temporal (no son
+		// etiquetas todavía). Si la línea no coincide, se envía sin cambios.
+		stage.regex {
+			expression = "^(?P<remote_addr>\\S+) \\S+ (?P<remote_user>\\S+) \\[(?P<time_local>[^\\]]+)\\] \"(?P<method>\\S+) (?P<path>\\S+) (?P<protocol>[^\"]*)\" (?P<status>\\d{3}) (?P<body_bytes>\\d+)"
+		}
+
+		// Promueve a etiqueta SOLO campos de pocos valores distintos.
+		// NO conviertas remote_addr ni path en etiquetas: tienen demasiados
+		// valores y dispararían la cardinalidad. Si los necesitas, consúltalos
+		// en LogQL con el parser regexp o pattern sobre la línea.
+		stage.labels {
+			values = {
+				method = "",
+				status = "",
+			}
+		}
+
+		// Usa la hora del evento (la del log) en lugar de la hora de lectura.
+		stage.timestamp {
+			source = "time_local"
+			format = "02/Jan/2006:15:04:05 -0700"
+		}
+	}
+
+	// --- error.log ------------------------------------------------------------
+	// Ejemplo: 2026/01/02 15:04:05 [error] 123#123: *1 open() "/x" failed ...
+	stage.match {
+		selector = "{log_type=\"error\"}"
+
+		// Extrae el nivel de severidad (debug, info, notice, warn, error, crit...).
+		stage.regex {
+			expression = "^\\S+ \\S+ \\[(?P<level>\\w+)\\]"
+		}
+
+		// El nivel tiene pocos valores, por eso es seguro usarlo como etiqueta.
+		stage.labels {
+			values = {
+				level = "",
+			}
+		}
+	}
+
+	forward_to = [loki.write.endpoint.receiver]
+}
+
+// 3) SISTEMA (parte A): convierte metadatos internos del journal en etiquetas.
+//    Los campos "__journal_*" se descartan por defecto; aquí se copian a
+//    etiquetas normales con reglas de relabel.
+loki.relabel "journal" {
+	// Este componente solo exporta las reglas; no recibe logs por sí mismo.
+	forward_to = []
+
+	// Unidad de systemd que generó el log (ssh.service, nginx.service, ...).
+	rule {
+		source_labels = ["__journal__systemd_unit"]
+		target_label  = "unit"
+	}
+
+	// Severidad (emerg, alert, crit, err, warning, notice, info, debug).
+	rule {
+		source_labels = ["__journal_priority_keyword"]
+		target_label  = "level"
+	}
+}
+
+// 3) SISTEMA (parte B): lee las entradas del journal de systemd directamente,
+//    sin ejecutar journalctl. Requiere que el usuario alloy esté en el grupo
+//    systemd-journal.
+loki.source.journal "system" {
+	// Aplica las reglas de arriba para crear las etiquetas unit y level.
+	relabel_rules = loki.relabel.journal.rules
+	labels        = {
+		service = "system",
+	}
+	forward_to = [loki.write.endpoint.receiver]
 }
